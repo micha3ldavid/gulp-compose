@@ -1,0 +1,36 @@
+{
+  "name": "gulp-smash",
+  "version": "1.0.0",
+  "description": "Smash files and keep an orgainized codebase",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/micha3ldavid/gulp-smash.git"
+  },
+  "keywords": [
+    "smash",
+    "concat",
+    "build",
+    "organization"
+  ],
+  "author": "Michael Juliano",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/micha3ldavid/gulp-smash/issues"
+  },
+  "homepage": "https://github.com/micha3ldavid/gulp-smash#readme",
+  "dependencies": {
+    "gulp": "^3.9.1",
+    "gulp-concat": "^2.6.1",
+    "gulp-minify": "^1.0.0",
+    "through2": "^2.0.3"
+  },
+  "devDependencies": {
+    "eslint": "^4.5.0",
+    "eslint-config-airbnb-base": "^11.3.1",
+    "eslint-plugin-import": "^2.7.0"
+  }
+}
