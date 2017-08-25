@@ -1,19 +1,22 @@
 {
-  "namespace": "example",
-  "input.root": "./example/src",
-  "input.files": [
+  "root": "./example/src",
+  "files": [
     "{root}/one.js",
     "{root}/two.js",
-    "{root}/three.js"
+    "{root}/three.js",
+    "./src/core.js"
   ],
-  "output.root": "./example/dist",
-  "output.file": "example.js",
-  "file.wrapper": "js-envs",
-  "output.dependencies": {
-    "core": {
-      "path.reference": "gulpSmash",
-      "path.require": "gulp-smash/core",
-      "path.define": "gulp-smash/core"
+  "output": {
+    "name": "example",
+    "file": "example.js",
+    "dest": "./example/dist",
+    "wrap": "js-environment-wrapper",
+    "deps": {
+      "core": {
+        "reference": "gulpSmash",
+        "require": "gulp-smash/core",
+        "define": "gulp-smash/core"
+      }
     }
   },
   "gulp-minify": {

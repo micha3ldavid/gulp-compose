@@ -1,2 +1,2 @@
 /* eslint-env node */
-module.exports = require('./src/core');
+module.exports = require('./src');

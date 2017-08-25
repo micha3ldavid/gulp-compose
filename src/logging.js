@@ -1,15 +1,4 @@
 /* eslint-env node */
-const { FILE_WRAPPERS } = require('./constants');
-const hasOwn = Object.hasOwnProperty;
-
-function findWrapperFile (config = {}) {
-  const wrapper = config['file.wrapper'];
-  if (wrapper && hasOwn.call(FILE_WRAPPERS, wrapper)) {
-    return FILE_WRAPPERS[wrapper];
-  }
-  return wrapper;
-}
-
 function logCannotFindWrapperFile (src) {
   console.log(`gulp-smash:: Unable to find wrapper file: "${src}".`);
   console.log('gulp-smash:: You can provide your own file path or use one of our presets below.');
@@ -20,8 +9,14 @@ function logCannotFindSmashFiles (src) {
   console.log(`gulp-smash:: Unable to find smash files: "${src}".`);
 }
 
+function logConfigParseError (err) {
+  console.log('gulp-smash:: Unable to parse configuration file.');
+  console.log('gulp-smash:: Error:');
+  console.log(err);
+}
+
 module.exports = {
-  findWrapperFile,
   logCannotFindWrapperFile,
   logCannotFindSmashFiles,
+  logConfigParseError
 };

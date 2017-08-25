@@ -5,43 +5,55 @@ const concat = require('gulp-concat');
 const minify = require('gulp-minify');
 const through2 = require('through2');
 const Buffer = require('buffer').Buffer;
+const hasOwn = Object.hasOwnProperty;
 
 const {
-  findWrapperFile,
   logCannotFindWrapperFile,
-  logCannotFindSmashFiles
-} = require('./utils');
+  logCannotFindSmashFiles,
+  logConfigParseError
+} = require('./logging');
+
+const {
+  FILE_WRAPPERS,
+  GULP_SRC_FILE_EXP,
+  GULP_SRC_GLOBAL_FILE_EXP
+} = require('./constants');
+
+function getWrapperFile (config = {}) {
+  const wrap = config.output.wrap;
+  if (wrap && hasOwn.call(FILE_WRAPPERS, wrap)) {
+    return FILE_WRAPPERS[wrap];
+  }
+  return wrap;
+}
 
 //const referenceDependencies = getReferenceDependencies(config);
 //const requireDependencies = getRequireDependencies(config);
 //.replace('\'{{references}}\'', referenceDependencies)
 //.replace('\'{{requires}}\'', requireDependencies)
 
-function getConfig (cb) {
-
-  let config;
-  let contents;
-
-  return through2.obj((file, enc, done) => {
+function getConfigFile (cb) {
+  return through2.obj((file, enc, closeStream) => {
     try {
-      contents = file.contents.toString();
-      config = JSON.parse(contents);
+      const contents = file.contents.toString();
+      const config = JSON.parse(contents);
+      cb(config, closeStream);
     }
     catch (err) {
-      config = { err };
+      logConfigParseError(err);
+      closeStream();
     }
-    cb(config, done);
   });
 }
 
-function getWrapperFile (src, cb) {
+function openWrapperFile (src, cb) {
 
   let piped = false;
 
   return gulp.src(src)
-    .pipe(through2.obj((file, env, done) => {
+    .pipe(through2.obj((file, env, closeStream) => {
       piped = true;
-      cb(file.contents.toString(), done);
+      cb(file.contents.toString(), closeStream);
     }))
     .on('finish', () => {
       if (piped !== true) {
@@ -51,66 +63,74 @@ function getWrapperFile (src, cb) {
 }
 
 function wrapFile (config) {
-  return through2.obj((file, enc, done) => {
+  return through2.obj((file, enc, closeStream) => {
 
-    const wrapper = findWrapperFile(config);
+    const wrapper = getWrapperFile(config);
 
     if (wrapper) {
-      getWrapperFile(wrapper, (contents, done2) => {
+      openWrapperFile(wrapper, (contents, closeWrapperStream) => {
 
-        const content = file.contents.toString();
         const output = contents
-          .replace('{{namespace}}', config.name)
+          .replace('{{name}}', config.output.name)
           .replace('\'{{content}}\'', content);
 
         file.contents = Buffer.from(output);
-        done(null, file);
-        done2();
+
+        closeWrapperStream();
+        closeStream(null, file);
       });
       return;
     }
-    done(null, file);
+    closeStream(null, file);
   });
 }
 
-function smashFiles (config, options, done) {
+function smashFiles (config, options, closeStream) {
 
-  const root = config['input.root'] || '';
-  const files = (config['input.files'] || []).map((file) => {
+  const root = config.root || '';
+  const files = (config.files || []).map((file) => {
     return file.replace(/\{root\}/i, root);
   });
 
-  const filename = config['output.file'] || null;
-  const filepath = config['output.root'] || null;
+  const file = config.output.file;
+  const dest = config.output.dest;
 
   return gulp.src(files)
-    .pipe(concat(filename))
+    .pipe(concat(file))
     .pipe(wrapFile(config))
-    .pipe(gulp.dest(filepath))
+    .pipe(gulp.dest(dest))
     .on('finish', () => {
-      done();
+      closeStream();
     });
 }
 
-module.exports = function smash (src, options = {}) {
+function smash (src, options = {}) {
 
   let piped = false;
   let smashSrc = src;
   let smashOptions = options;
 
   if (typeof src !== 'string' && !(src instanceof Array)) {
-    smashSrc = './**/.smash.json';
+    smashSrc = GULP_SRC_FILE_EXP;
     smashOptions = src || {};
   }
 
   return gulp.src(smashSrc)
-    .pipe(getConfig((config, done) => {
+    .pipe(getConfigFile((config, closeStream) => {
       piped = true;
-      return smashFiles(config, smashOptions, done)
+      return smashFiles(config, smashOptions, closeStream)
     }))
     .on('finish', () => {
       if (piped !== true) {
         logCannotFindSmashFiles(src);
       }
     });
+};
+
+module.exports = {
+  smash,
+  wrapFile,
+  smashFiles,
+  getConfigFile,
+  openWrapperFile
 };
