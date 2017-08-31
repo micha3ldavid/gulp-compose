@@ -1,6 +1,6 @@
 /* eslint-env node */
 const gulp = require('gulp');
-const smash = require('./src/core');
+const smash = require('./src');
 const globalConfig = {
   'gulp-minify': {
     ext: {
@@ -10,14 +10,7 @@ const globalConfig = {
 };
 
 gulp.task('build-example', () => (
-  smash({
-    step: function (prevStep, nextStep) {
-      if (lastStep === 'concat') {
-        return babelify()
-      }
-    }
-    finished: function () {}
-  });
+  smash(globalConfig)
 ));
 
 module.exports = gulp;

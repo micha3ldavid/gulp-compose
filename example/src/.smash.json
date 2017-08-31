@@ -7,15 +7,17 @@
     "./src/core.js"
   ],
   "output": {
-    "name": "example",
     "file": "example.js",
     "dest": "./example/dist",
-    "wrap": "js-environment-wrapper",
-    "deps": {
-      "core": {
-        "reference": "gulpSmash",
-        "require": "gulp-smash/core",
-        "define": "gulp-smash/core"
+    "wrap": "environment.js",
+    "vars": {
+      "namespace": "example",
+      "dependencies": {
+        "jquery": {
+          "reference": "jQuery",
+          "require": "libs/jquery",
+          "define": "libs/jquery"
+        }
       }
     }
   },

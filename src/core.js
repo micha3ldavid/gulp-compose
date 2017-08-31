@@ -8,9 +8,10 @@ const Buffer = require('buffer').Buffer;
 const hasOwn = Object.hasOwnProperty;
 
 const {
-  logCannotFindWrapperFile,
+  logConfigParseError,
   logCannotFindSmashFiles,
-  logConfigParseError
+  logCannotFindWrapperFile,
+  logWrapperFileVariableParseError
 } = require('./logging');
 
 const {
@@ -18,6 +19,11 @@ const {
   GULP_SRC_FILE_EXP,
   GULP_SRC_GLOBAL_FILE_EXP
 } = require('./constants');
+
+/**
+ * Checks for a wrapper file to use after file concats.
+ * @param {object} config - configuration (.smash.json) file contents.
+ */
 
 function getWrapperFile (config = {}) {
   const wrap = config.output.wrap;
@@ -27,10 +33,10 @@ function getWrapperFile (config = {}) {
   return wrap;
 }
 
-//const referenceDependencies = getReferenceDependencies(config);
-//const requireDependencies = getRequireDependencies(config);
-//.replace('\'{{references}}\'', referenceDependencies)
-//.replace('\'{{requires}}\'', requireDependencies)
+/**
+ * Fetches the configuration file contents for an individual configuration as JSON.
+ * @param {function} cb - callback function
+ */
 
 function getConfigFile (cb) {
   return through2.obj((file, enc, closeStream) => {
@@ -45,6 +51,12 @@ function getConfigFile (cb) {
     }
   });
 }
+
+/**
+ * Opens the wrapper file and calls your callback, providing you the wrapper file contents and a 'complete' callback to close the Stream when finished.
+ * @param {string} src - file and pathname of the wrapper file. Can also be a key to a gulp-smash wrapper file template.
+ * @param {function} cb - callback function which is provided with the file contents and a closeStream 'complete' to be called when finished.
+ */
 
 function openWrapperFile (src, cb) {
 
@@ -62,6 +74,32 @@ function openWrapperFile (src, cb) {
     });
 }
 
+function parseWrapperFile (config, content) {
+
+  const output = config.output || {};
+  const variables = output.vars || {};
+  const variableKeys = Object.keys(variables);
+
+  return variableKeys.reduce((reduction, key) => {
+
+    let value = variables[key]
+
+    if (typeof value === 'object') {
+      try {
+        value = JSON.stringify(value);
+      }
+      catch (e) {
+        logWrapperFileVariableParseError(key, err);
+        value = ''
+      }
+    }
+    return reduction.replace(
+      new RegExp('[\'|\"]\{\{(vars.' + key + ')\}\}[\"|\']'),
+      value
+    )
+  }, content);
+}
+
 function wrapFile (config) {
   return through2.obj((file, enc, closeStream) => {
 
@@ -70,11 +108,17 @@ function wrapFile (config) {
     if (wrapper) {
       openWrapperFile(wrapper, (contents, closeWrapperStream) => {
 
-        const output = contents
-          .replace('{{name}}', config.output.name)
-          .replace('\'{{content}}\'', content);
+        const output = config.output || {}
+        const variables = output.vars || {}
+        const variableKeys = Object.keys(variables)
 
-        file.contents = Buffer.from(output);
+        const fileContentParsed = parseWrapperFile(config, contents);
+        const fileWithContent = fileContentParsed.replace(
+          /['|"]\{\{content\}\}['|"]/i,
+          file.contents.toString()
+        );
+
+        file.contents = Buffer.from(fileWithContent);
 
         closeWrapperStream();
         closeStream(null, file);
