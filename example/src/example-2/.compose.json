@@ -1,0 +1,29 @@
+{
+  "root": "./example/src/example-2",
+  "files": [
+    "{root}/one.js",
+    "{root}/two.js",
+    "{root}/three.js",
+    "./src/core.js"
+  ],
+  "output": {
+    "file": "example-2.js",
+    "dest": "./example/dist",
+    "wrap": "closure.js",
+    "vars": {
+      "namespace": "example_2",
+      "dependencies": {
+        "jquery": {
+          "reference": "jQuery",
+          "require": "jquery",
+          "define": "jquery"
+        }
+      }
+    }
+  },
+  "gulp-minify": {
+    "ext": {
+      "min": ".min.js"
+    }
+  }
+}

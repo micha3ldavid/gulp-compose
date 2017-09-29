@@ -1,25 +1,27 @@
 /* eslint-env node */
 const { FILE_WRAPPERS } = require('./constants')
+const logPrefixer = 'gulp-compose::'
 
 function logWrapperFileVariableParseError (variableKey, err) {
-  console.log(`gulp-smash:: Unable to parse configuration var ${variableKey}.`);
-  console.log('gulp-smash:: Error:');
+  console.log(`${logPrefixer} Unable to parse configuration var ${variableKey}.`);
+  console.log(`${logPrefixer} Error:`);
   console.log(err);
 }
 
 function logCannotFindWrapperFile (src) {
-  console.log(`gulp-smash:: Unable to find wrapper file: "${src}".`);
-  console.log('gulp-smash:: You can provide your own file path or use one of our presets below.');
-  console.log('gulp-smash:: File wrapper presets:', Object.keys(FILE_WRAPPERS));
+  console.log(`${logPrefixer} Unable to find wrapper file: "${src}".`);
+  console.log(`${logPrefixer} You can provide your own file path or use one of our presets below.`);
+  console.log(`${logPrefixer} File wrapper presets:`, Object.keys(FILE_WRAPPERS));
 }
 
 function logCannotFindSmashFiles (src) {
-  console.log(`gulp-smash:: Unable to find smash files: "${src}".`);
+  console.log(`${logPrefixer} Unable to find compose files: "${src}".`);
+  console.log(src)
 }
 
 function logConfigParseError (err) {
-  console.log('gulp-smash:: Unable to parse configuration file.');
-  console.log('gulp-smash:: Error:');
+  console.log(`${logPrefixer} Unable to parse configuration file.`);
+  console.log(`${logPrefixer} Error:`);
   console.log(err);
 }
 

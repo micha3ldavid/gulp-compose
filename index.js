@@ -1,2 +1,3 @@
 /* eslint-env node */
-module.exports = require('./src');
+const { compose } = require('./src');
+module.exports = compose;

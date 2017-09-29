@@ -1,17 +1,18 @@
 {
-  "name": "gulp-smash",
+  "name": "gulp-compose",
   "version": "1.0.0",
-  "description": "Smash files and keep an orgainized codebase",
+  "description": "Keep library code clean, decoupled, and organized. Then compose your code for distribution.",
   "main": "index.js",
   "scripts": {
     "test": "test"
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/micha3ldavid/gulp-smash.git"
+    "url": "git+ssh://git@github.com/micha3ldavid/gulp-compose.git"
   },
   "keywords": [
-    "smash",
+    "compose",
+    "gulp",
     "concat",
     "build",
     "organization"
@@ -19,9 +20,9 @@
   "author": "Michael Juliano",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/micha3ldavid/gulp-smash/issues"
+    "url": "https://github.com/micha3ldavid/gulp-compose/issues"
   },
-  "homepage": "https://github.com/micha3ldavid/gulp-smash#readme",
+  "homepage": "https://github.com/micha3ldavid/gulp-compose#readme",
   "dependencies": {
     "gulp": "^3.9.1",
     "gulp-concat": "^2.6.1",

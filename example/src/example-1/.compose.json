@@ -1,5 +1,5 @@
 {
-  "root": "./example/src",
+  "root": "./example/src/example-1",
   "files": [
     "{root}/one.js",
     "{root}/two.js",
@@ -7,16 +7,16 @@
     "./src/core.js"
   ],
   "output": {
-    "file": "example.js",
+    "file": "example-1.js",
     "dest": "./example/dist",
     "wrap": "environment.js",
     "vars": {
-      "namespace": "example",
+      "namespace": "example_1",
       "dependencies": {
         "jquery": {
           "reference": "jQuery",
-          "require": "libs/jquery",
-          "define": "libs/jquery"
+          "require": "jquery",
+          "define": "jquery"
         }
       }
     }

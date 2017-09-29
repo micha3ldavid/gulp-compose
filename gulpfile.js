@@ -1,6 +1,6 @@
 /* eslint-env node */
 const gulp = require('gulp');
-const smash = require('./src');
+const compose = require('./');
 const globalConfig = {
   'gulp-minify': {
     ext: {
@@ -10,7 +10,7 @@ const globalConfig = {
 };
 
 gulp.task('build-example', () => (
-  smash(globalConfig)
+  compose(globalConfig)
 ));
 
 module.exports = gulp;

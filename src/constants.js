@@ -1,17 +1,16 @@
 /* eslint-env node */
 const path = require('path');
-const folder = 'file-wrappers';
 
-const GULP_SRC_GLOBAL_FILE_EXP = './.smash.json';
-const GULP_SRC_FILE_EXP = './**/.smash.json';
+const dir = __dirname;
+const folder = 'file-wrappers';
+const SRC_FILE_EXPRESSION = './**/.compose.json';
 
 const FILE_WRAPPERS = {
-  'environment.js': path.join(__dirname, folder, 'environment.js'),
-  'closure.js': path.join(__dirname, folder, 'closure.js')
+  'environment.js': path.join(dir, folder, 'environment.js'),
+  'closure.js': path.join(dir, folder, 'closure.js')
 };
 
 module.exports = {
-  GULP_SRC_GLOBAL_FILE_EXP,
-  GULP_SRC_FILE_EXP,
+  SRC_FILE_EXPRESSION,
   FILE_WRAPPERS
 };

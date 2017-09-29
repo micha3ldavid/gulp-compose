@@ -1,39 +1,19 @@
 /** DO NOT EDIT **/
-/** THIS FILE WAS CREATED FROM GULP-SMASH **/
+/** THIS FILE WAS CREATED FROM GULP-COMPOSE **/
 /** TO PROPERLY MODIFY FILE, EDIT SRC FILES AND RUN BUILD TASKS **/
 /* eslint-disable */
-(function handleJSEnvironment (root, factory) {
-
-  const dependencyRefs = {"jquery":{"reference":"jQuery","require":"libs/jquery","define":"libs/jquery"}};
-  const dependencyKeys = Object.keys(dependencies);
-
-  if (typeof define === 'function' && define.amd) {
-    const deps = dependencyKeys.map((key) => {
-      return dependencyRefs[key].define || dependencyRefs[key];
-    });
-    define(deps, (...dependencies) => (
-      factory.apply(root, ...dependencies)
-    ));
-  }
-  else if (typeof module === 'object' && module.exports) {
-    const deps = dependencyKeys.map((key) => {
-      return dependencyRefs[key].require || dependencyRefs[key];
-    });
-    module.exports = factory.apply(root, deps);
-  }
-  else {
-    const deps = dependencyKeys.map((key) => {
-      const parts = (dependencyRefs[key].reference || dependencyRefs[key]).split('.');
-      return parts.reduce((reduction, part) => {
-        return reduction[part];
-      }, root);
-    });
-    root.example = factory.apply(root, deps);
-  }
-
-}(typeof window !== 'undefined' ? window : this, (...dependencies) => {
+(function handleJSClosure (root, dependencyRefs = {}) {
 
   'use strict';
+
+  const dependencyKeys = Object.keys(dependencyRefs);
+  const dependencies = dependencyKeys.reduce((reduction, key) => {
+    const parts = (dependencyRefs[key].reference || dependencyRefs[key]).split('.');
+    reduction[key] = parts.reduce((reduction2, part) => {
+      return reduction2[part];
+    }, root);
+    return reduction;
+  }, {});
 
   
 function one () {
@@ -68,9 +48,13 @@ const {
 
 const {
   FILE_WRAPPERS,
-  GULP_SRC_FILE_EXP,
-  GULP_SRC_GLOBAL_FILE_EXP
+  SRC_FILE_EXPRESSION
 } = require('./constants');
+
+/**
+ * Checks for a wrapper file to use after file concats.
+ * @param {object} config - configuration (.smash.json) file contents.
+ */
 
 function getWrapperFile (config = {}) {
   const wrap = config.output.wrap;
@@ -79,6 +63,11 @@ function getWrapperFile (config = {}) {
   }
   return wrap;
 }
+
+/**
+ * Fetches the configuration file contents for an individual configuration as JSON.
+ * @param {function} cb - callback function
+ */
 
 function getConfigFile (cb) {
   return through2.obj((file, enc, closeStream) => {
@@ -93,6 +82,12 @@ function getConfigFile (cb) {
     }
   });
 }
+
+/**
+ * Opens the wrapper file and calls your callback, providing you the wrapper file contents and a 'complete' callback to close the Stream when finished.
+ * @param {string} src - file and pathname of the wrapper file. Can also be a key to a gulp-smash wrapper file template.
+ * @param {function} cb - callback function which is provided with the file contents and a closeStream 'complete' to be called when finished.
+ */
 
 function openWrapperFile (src, cb) {
 
@@ -165,6 +160,16 @@ function wrapFile (config) {
   });
 }
 
+function onBeforeDest (options, config = {}) {
+  return through2.obj((stream, enc, closeStream) => {
+    if (options.onBeforeDest) {
+      options.onBeforeDest(config, stream, enc, closetream);
+      return;
+    }
+    closeStream();
+  })
+}
+
 function smashFiles (config, options, closeStream) {
 
   const root = config.root || '';
@@ -178,20 +183,21 @@ function smashFiles (config, options, closeStream) {
   return gulp.src(files)
     .pipe(concat(file))
     .pipe(wrapFile(config))
+    //.pipe(onBeforeDest(options, config))
     .pipe(gulp.dest(dest))
     .on('finish', () => {
       closeStream();
     });
 }
 
-function smash (src, options = {}) {
+function compose (src, options = {}) {
 
   let piped = false;
   let smashSrc = src;
   let smashOptions = options;
 
   if (typeof src !== 'string' && !(src instanceof Array)) {
-    smashSrc = GULP_SRC_FILE_EXP;
+    smashSrc = SRC_FILE_EXPRESSION;
     smashOptions = src || {};
   }
 
@@ -202,18 +208,19 @@ function smash (src, options = {}) {
     }))
     .on('finish', () => {
       if (piped !== true) {
-        logCannotFindSmashFiles(src);
+        logCannotFindSmashFiles(smashSrc);
       }
     });
 };
 
 module.exports = {
-  smash,
+  compose,
   wrapFile,
   smashFiles,
   getConfigFile,
   openWrapperFile
 };
 
-}));
+
+}(typeof window !== 'undefined' ? window : this, {"jquery":{"reference":"jQuery","require":"jquery","define":"jquery"}}));
 /* eslint-enable */

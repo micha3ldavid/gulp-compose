@@ -1,5 +1,5 @@
 /** DO NOT EDIT **/
-/** THIS FILE WAS CREATED FROM GULP-SMASH **/
+/** THIS FILE WAS CREATED FROM GULP-COMPOSE **/
 /** TO PROPERLY MODIFY FILE, EDIT SRC FILES AND RUN BUILD TASKS **/
 /* eslint-disable */
 (function handleJSClosure (root, dependencyRefs = {}) {
