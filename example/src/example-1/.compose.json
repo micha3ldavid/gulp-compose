@@ -1,9 +1,7 @@
 {
   "root": "./example/src/example-1",
   "files": [
-    "{root}/one.js",
-    "{root}/two.js",
-    "{root}/three.js",
+    "{root}/*.js",
     "./src/core.js"
   ],
   "output": {
@@ -19,11 +17,6 @@
           "define": "jquery"
         }
       }
-    }
-  },
-  "gulp-minify": {
-    "ext": {
-      "min": ".min.js"
     }
   }
 }

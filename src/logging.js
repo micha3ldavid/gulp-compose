@@ -14,9 +14,8 @@ function logCannotFindWrapperFile (src) {
   console.log(`${logPrefixer} File wrapper presets:`, Object.keys(FILE_WRAPPERS));
 }
 
-function logCannotFindSmashFiles (src) {
+function logCannotFindComposeFiles (src) {
   console.log(`${logPrefixer} Unable to find compose files: "${src}".`);
-  console.log(src)
 }
 
 function logConfigParseError (err) {
@@ -27,7 +26,7 @@ function logConfigParseError (err) {
 
 module.exports = {
   logWrapperFileVariableParseError,
+  logCannotFindComposeFiles,
   logCannotFindWrapperFile,
-  logCannotFindSmashFiles,
   logConfigParseError
 };

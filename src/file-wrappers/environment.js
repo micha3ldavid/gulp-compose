@@ -1,7 +1,6 @@
 /** DO NOT EDIT **/
 /** THIS FILE WAS CREATED FROM GULP-COMPOSE **/
 /** TO PROPERLY MODIFY FILE, EDIT SRC FILES AND RUN BUILD TASKS **/
-/* eslint-disable */
 (function handleJSEnvironment (root, factory) {
 
   const dependencyRefs = '{{vars.dependencies}}';
@@ -37,4 +36,3 @@
 
   '{{content}}'
 }));
-/* eslint-enable */

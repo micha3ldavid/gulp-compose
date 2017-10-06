@@ -10,7 +10,12 @@ const globalConfig = {
 };
 
 gulp.task('build-example', () => (
-  compose(globalConfig)
+  compose({
+    options: globalConfig,
+    done: (config) => {
+      console.info('done')
+    }
+  })
 ));
 
 module.exports = gulp;
