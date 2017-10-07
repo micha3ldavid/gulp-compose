@@ -176,8 +176,8 @@ function distributeFile (props = {}) {
   // if not dest
 
   return gulp.src(path.join(dest, file))
-    //.pipe(applyLayer('babel', distribution))
     .pipe(applyLayer('babel', distribution))
+    .pipe(applyLayer('minify', distribution)) // why is this not retaining concat files?
     .pipe(gulp.dest(distribution.dest))
     .on('finish', () => {
       done();
