@@ -1,4 +1,4 @@
 
 function one () {
-  return 1;
+  return dependencies.$;
 }

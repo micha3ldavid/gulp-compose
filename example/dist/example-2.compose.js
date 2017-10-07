@@ -13,6 +13,20 @@
     return reduction;
   }, {});
 
-  '{{content}}'
+  
+	function one () {
+	  return 1;
+	}
+	
+	
+	function two () {
+	  return 2;
+	}
+	
+	
+	function three () {
+	  return 3;
+	}
+	
 
-}(typeof window !== 'undefined' ? window : this, '{{vars.dependencies}}'));
+}(typeof window !== 'undefined' ? window : this, {"jquery":{"reference":"jQuery","require":"jquery","define":"jquery"}}));

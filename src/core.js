@@ -1,11 +1,13 @@
 /* eslint-env node */
 const Buffer = require('buffer').Buffer;
-const Composer = require('./composer');
 const concat = require('gulp-concat');
 const minify = require('gulp-minify');
 const through2 = require('through2');
+const babel = require('gulp-babel');
 const path = require('path');
 const gulp = require('gulp');
+
+const Composer = require('./composer');
 
 const {
   logConfigParseError,
@@ -45,12 +47,38 @@ function getConfigFile (callback) {
   });
 }
 
+function emitHook (type = '', props = {}) {
+  return through2.obj((file, enc, done) => {
+    const { composer = null, config = {} } = props;
+    if (composer && composer.has(type)) {
+      composer.emit(type, { config, done, file, enc });
+      return;
+    }
+    done(null, file);
+  });
+}
+
+function applyLayer (type = '', config = {}) {
+  switch (type) {
+    case 'babel':
+      if (config.babel) {
+        return babel(config.babel);
+      }
+    case 'minify':
+      if (config.minify) {
+        return minify(config.minify);
+      }
+    default:
+      break;
+  }
+  return through2.obj((file, enc, done) => {
+    done(null, file);
+  });
+}
+
 function openWrapperFile (props = {}) {
 
-  const {
-    path = '',
-    done = NOOP,
-  } = props;
+  const { path = '', done = NOOP } = props;
 
   let contents = null;
 
@@ -126,6 +154,36 @@ function wrapFile (config = {}) {
   });
 }
 
+function distributeFile (props = {}) {
+
+  const {
+    composer = null,
+    config = {},
+    done = NOOP,
+  } = props;
+
+  const {
+    output = {}
+  } = config;
+
+  const {
+    distribution = {},
+    file = '',
+    dest = '',
+  } = output;
+
+  // if not file
+  // if not dest
+
+  return gulp.src(path.join(dest, file))
+    //.pipe(applyLayer('babel', distribution))
+    .pipe(applyLayer('babel', distribution))
+    .pipe(gulp.dest(distribution.dest))
+    .on('finish', () => {
+      done();
+    });
+}
+
 function concatFiles (props = {}) {
 
   const {
@@ -145,14 +203,22 @@ function concatFiles (props = {}) {
   });
 
   const output = config.output || {};
+  const distribution = output.distribution || null;
+
   const file = output.file;
   const dest = output.dest;
+  const pipe = output.pipe;
 
   return gulp.src(files)
     .pipe(concat(file))
     .pipe(wrapFile(config))
+    .pipe(emitHook('output.end', { config, composer }))
     .pipe(gulp.dest(dest))
     .on('finish', () => {
+      if (distribution) {
+        distributeFile({ composer, config, done });
+        return;
+      }
       done();
     });
 }
@@ -165,7 +231,7 @@ function compose (src, hook) {
 
   if (typeof path !== 'string' && !(path instanceof Array)) {
     path = SRC_FILE_EXPRESSION;
-    bind = path;
+    bind = src;
   }
 
   if (typeof bind !== 'function') {

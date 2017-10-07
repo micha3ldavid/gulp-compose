@@ -4,8 +4,8 @@
     "{root}/*.js"
   ],
   "output": {
-    "file": "index.js",
-    "dest": "./example/src",
+    "file": "example-1.compose.js",
+    "dest": "./example/dist",
     "wrap": "environment.js",
     "vars": {
       "namespace": "example_1",
@@ -18,14 +18,16 @@
       }
     },
     "distribution": {
-      "file": "example-1.js",
-      "dest": "./example/dist",
-      "pipe": {
-        "babelify": {},
-        "minify": {
-          "ext": {
-            "min": ".min.js"
-          }
+      "dest": "./example/dist/test",
+      "babel": {
+        "presets": [
+          "es2015"
+        ]
+      },
+      "minify": {
+        "mangle": false,
+        "ext": {
+          "min": ".min.js"
         }
       }
     }

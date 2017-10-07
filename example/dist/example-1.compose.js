@@ -4,7 +4,7 @@
 /** GULP-COMPOSE ENVIRONMENT.JS WRAPPER **/
 (function handleJSEnvironment (root, factory) {
 
-  const dependencyRefs = '{{vars.dependencies}}';
+  const dependencyRefs = {"jquery":{"reference":"$","require":"jquery","define":"jquery"}};
   const dependencyKeys = Object.keys(dependencies);
 
   if (typeof define === 'function' && define.amd) {
@@ -28,10 +28,28 @@
         return reduction[part];
       }, root);
     });
-    root.'{{vars.namespace}}' = factory.apply(root, deps);
+    root.example_1 = factory.apply(root, deps);
   }
 
 }(typeof window !== 'undefined' ? window : this, (...dependencies) => {
 
-  '{{content}}'
+  
+	function one () {
+	  return dependencies.$;
+	}
+	
+	
+	function three () {
+	  return 3;
+	}
+	
+	three();
+	
+	
+	function two () {
+	  return 2;
+	}
+	
+	two();
+	
 }));

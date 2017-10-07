@@ -1,4 +1,8 @@
 
+function hasOwn (who, prop) {
+  return Object.hasOwnProperty.call(who, prop);
+}
+
 class Composer {
 
   constructor (config) {
@@ -6,18 +10,37 @@ class Composer {
     this.events = {};
   }
 
-  on (event, handler) {
-    if (!Object.hasOwnProperty(this.events, event)) {
-      this.events[event] = [];
+  on (type, handler) {
+    if (!hasOwn(this.events, type)) {
+      this.events[type] = [];
     }
-    this.events[event].push(handler);
+    this.events[type].push(handler);
     return this;
   }
 
-  emit (event, ...props) {
-    if (Object.hasOwnProperty(this.events, event)) {
-      this.events[event].forEach((handler) => {
-        handler(...props);
+  has (type) {
+    return hasOwn(this.events, type)
+      && this.events[type].length > 0;
+  }
+
+  off (type, handler) {
+    if (hasOwn(this.events, type)) {
+      if (handler) {
+        this.events[type] = this.events[type].filter((boundHandler) => {
+          return boundHandler !== handler;
+        });
+      }
+      else {
+        this.events[type] = [];
+      }
+    }
+    return this;
+  }
+
+  emit (type, props) {
+    if (hasOwn(this.events, type)) {
+      this.events[type].forEach((handler) => {
+        handler(props);
       });
     }
     return this;

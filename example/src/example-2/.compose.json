@@ -3,11 +3,10 @@
   "files": [
     "{root}/one.js",
     "{root}/two.js",
-    "{root}/three.js",
-    "./src/core.js"
+    "{root}/three.js"
   ],
   "output": {
-    "file": "example-2.js",
+    "file": "example-2.compose.js",
     "dest": "./example/dist",
     "wrap": "closure.js",
     "vars": {
@@ -21,9 +20,16 @@
       }
     }
   },
-  "gulp-minify": {
-    "ext": {
-      "min": ".min.js"
+  "distribution": {
+    "file": "example-1.js",
+    "dest": "./example/dist",
+    "pipe": {
+      "babelify": {},
+      "minify": {
+        "ext": {
+          "min": ".min.js"
+        }
+      }
     }
   }
 }
