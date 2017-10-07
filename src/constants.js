@@ -10,7 +10,12 @@ const FILE_WRAPPERS = {
   'closure.js': path.join(dir, folder, 'closure.js')
 };
 
+function NOOP () {
+  /* do nothing */
+}
+
 module.exports = {
   SRC_FILE_EXPRESSION,
-  FILE_WRAPPERS
+  FILE_WRAPPERS,
+  NOOP,
 };

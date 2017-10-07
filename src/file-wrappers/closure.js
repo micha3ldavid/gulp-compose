@@ -1,6 +1,7 @@
 /** DO NOT EDIT **/
 /** THIS FILE WAS CREATED FROM GULP-COMPOSE **/
 /** TO PROPERLY MODIFY FILE, EDIT SRC FILES AND RUN BUILD TASKS **/
+/** GULP-COMPOSE CLOSURE.JS WRAPPER **/
 (function handleJSClosure (root, dependencyRefs = {}) {
 
   'use strict';

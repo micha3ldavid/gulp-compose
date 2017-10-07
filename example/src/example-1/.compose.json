@@ -1,20 +1,31 @@
 {
   "root": "./example/src/example-1",
   "files": [
-    "{root}/*.js",
-    "./src/core.js"
+    "{root}/*.js"
   ],
   "output": {
-    "file": "example-1.js",
-    "dest": "./example/dist",
+    "file": "index.js",
+    "dest": "./example/src",
     "wrap": "environment.js",
     "vars": {
       "namespace": "example_1",
       "dependencies": {
         "jquery": {
-          "reference": "jQuery",
+          "reference": "$",
           "require": "jquery",
           "define": "jquery"
+        }
+      }
+    },
+    "distribution": {
+      "file": "example-1.js",
+      "dest": "./example/dist",
+      "pipe": {
+        "babelify": {},
+        "minify": {
+          "ext": {
+            "min": ".min.js"
+          }
         }
       }
     }

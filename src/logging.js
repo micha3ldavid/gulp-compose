@@ -15,7 +15,7 @@ function logCannotFindWrapperFile (src) {
 }
 
 function logCannotFindComposeFiles (src) {
-  console.log(`${logPrefixer} Unable to find compose files: "${src}".`);
+  console.log(`${logPrefixer} Unable to find compose file(s): "${src}".`);
 }
 
 function logConfigParseError (err) {

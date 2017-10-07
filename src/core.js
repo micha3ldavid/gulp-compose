@@ -1,5 +1,6 @@
 /* eslint-env node */
 const Buffer = require('buffer').Buffer;
+const Composer = require('./composer');
 const concat = require('gulp-concat');
 const minify = require('gulp-minify');
 const through2 = require('through2');
@@ -16,17 +17,13 @@ const {
 const {
   FILE_WRAPPERS,
   SRC_FILE_EXPRESSION,
+  NOOP,
 } = require('./constants');
 
-const hasOwn = Object.hasOwnProperty;
-
-function noop () {
-  /* do nothing */
-}
-
 function getWrapperFilePath (config = {}) {
-  const wrap = config.output.wrap;
-  if (wrap && hasOwn.call(FILE_WRAPPERS, wrap)) {
+  const { output = {} } = config;
+  const { wrap } = output;
+  if (wrap && Object.hasOwnProperty.call(FILE_WRAPPERS, wrap)) {
     return FILE_WRAPPERS[wrap];
   }
   return wrap;
@@ -52,7 +49,7 @@ function openWrapperFile (props = {}) {
 
   const {
     path = '',
-    done = noop,
+    done = NOOP,
   } = props;
 
   let contents = null;
@@ -108,24 +105,21 @@ function wrapFile (config = {}) {
     const path = getWrapperFilePath(config);
 
     if (path) {
-      openWrapperFile({
-        path,
-        done: (contents, done2) => {
-          const output = config.output || {};
-          const variables = output.vars || {};
-          const variableKeys = Object.keys(variables) || [];
-          const parsed = parseWrapperFile({ config, contents });
-          const polished = parsed.replace(
-            /['|"]\{\{content\}\}['|"]/i,
-            file.contents.toString().replace(/\n/g, '\n\t')
-          );
+      openWrapperFile({ path, done: (contents, done2) => {
+        const output = config.output || {};
+        const variables = output.vars || {};
+        const variableKeys = Object.keys(variables) || [];
+        const parsed = parseWrapperFile({ config, contents });
+        const polished = parsed.replace(
+          /['|"]\{\{content\}\}['|"]/i,
+          file.contents.toString().replace(/\n/g, '\n\t')
+        );
 
-          file.contents = Buffer.from(polished);
+        file.contents = Buffer.from(polished);
 
-          done2();
-          done(null, file);
-        }
-      });
+        done2();
+        done(null, file);
+      }});
       return;
     }
     done(null, file);
@@ -135,9 +129,9 @@ function wrapFile (config = {}) {
 function concatFiles (props = {}) {
 
   const {
-    options = {},
     config = {},
-    done = noop,
+    done = NOOP,
+    composer = null,
   } = props;
 
   const {
@@ -163,26 +157,25 @@ function concatFiles (props = {}) {
     });
 }
 
-function compose (props = {}) {
+function compose (src, hook) {
 
-  const {
-    path = SRC_FILE_EXPRESSION,
-    options = {},
-    done = noop,
-  } = props;
-
+  let path = src;
+  let bind = hook;
   let stream = null;
 
+  if (typeof path !== 'string' && !(path instanceof Array)) {
+    path = SRC_FILE_EXPRESSION;
+    bind = path;
+  }
+
+  if (typeof bind !== 'function') {
+    bind = NOOP;
+  }
+
   return gulp.src(path)
-    .pipe(getConfigFile((config, done2) => {
-      stream = concatFiles({
-        config,
-        options,
-        done: () => {
-          done2();
-          done(config);
-        }
-      });
+    .pipe(getConfigFile((config, done) => {
+      const composer = bind(new Composer(config));
+      stream = concatFiles({ composer, config, done });
     }))
     .on('finish', () => {
       if (stream === null) {
